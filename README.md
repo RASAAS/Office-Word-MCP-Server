@@ -1,273 +1,194 @@
-# Office-Word-MCP-Server
+# Office Word MCP Server
 
-[![smithery badge](https://smithery.ai/badge/@GongRzhe/Office-Word-MCP-Server)](https://smithery.ai/server/@GongRzhe/Office-Word-MCP-Server)
-A Model Context Protocol (MCP) server for creating, reading, and manipulating Microsoft Word documents. This server enables AI assistants to work with Word documents through a standardized interface, providing rich document editing capabilities.
+一个用于Microsoft Word文档操作的Model Context Protocol (MCP)服务器。该服务器通过MCP协议提供全面的Word文档创建、编辑和管理工具，专为n8n等自动化平台设计。
 
-<a href="https://glama.ai/mcp/servers/@GongRzhe/Office-Word-MCP-Server">
-  <img width="380" height="200" src="https://glama.ai/mcp/servers/@GongRzhe/Office-Word-MCP-Server/badge" alt="Office Word Server MCP server" />
-</a>
+## 功能特性
 
-![](https://badge.mcpx.dev?type=server "MCP Server")
+### 📄 文档管理 (7个工具)
+- 创建新的Word文档
+- 获取文档信息和元数据
+- 复制和合并文档
+- 列出可用文档
+- 获取文档大纲结构
 
-## Overview
+### ✏️ 内容操作 (9个工具)
+- 添加标题（多级别）
+- 插入段落文本
+- 创建和管理表格
+- 插入图片和图像
+- 添加分页符
+- 生成目录
+- 查找和替换文本
+- 删除段落
 
-Office-Word-MCP-Server implements the [Model Context Protocol](https://modelcontextprotocol.io/) to expose Word document operations as tools and resources. It serves as a bridge between AI assistants and Microsoft Word documents, allowing for document creation, content addition, formatting, and analysis.
+### 🎨 格式化 (3个工具)
+- 文本格式化（粗体、斜体、下划线等）
+- 创建自定义样式
+- 表格格式化
 
-The server features a modular architecture that separates concerns into core functionality, tools, and utilities, making it highly maintainable and extensible for future enhancements.
+### 🔒 文档保护 (5个工具)
+- 文档密码保护
+- 数字签名
+- 限制编辑模式
+- 文档验证
 
-### Example
+### 📝 脚注管理 (4个工具)
+- 添加脚注和尾注
+- 自定义脚注样式
+- 脚注格式转换
 
-#### Pormpt
+### 🔧 扩展功能 (3个工具)
+- PDF转换
+- 文本搜索和提取
+- 段落文本获取
 
-![image](https://github.com/user-attachments/assets/f49b0bcc-88b2-4509-bf50-995b9a40038c)
+**总计：31个验证可用的工具**
 
-#### Output
+## 快速开始
 
-![image](https://github.com/user-attachments/assets/ff64385d-3822-4160-8cdf-f8a484ccc01a)
+### 环境要求
+- Python 3.8+
+- pip包管理器
+- PM2进程管理器（可选，用于生产环境）
 
-## Features
+### 安装步骤
 
-### Document Management
-
-- Create new Word documents with metadata
-- Extract text and analyze document structure
-- View document properties and statistics
-- List available documents in a directory
-- Create copies of existing documents
-- Merge multiple documents into a single document
-- Convert Word documents to PDF format
-
-### Content Creation
-
-- Add headings with different levels
-- Insert paragraphs with optional styling
-- Create tables with custom data
-- Add images with proportional scaling
-- Insert page breaks
-- Add footnotes and endnotes to documents
-- Convert footnotes to endnotes
-- Customize footnote and endnote styling
-
-### Rich Text Formatting
-
-- Format specific text sections (bold, italic, underline)
-- Change text color and font properties
-- Apply custom styles to text elements
-- Search and replace text throughout documents
-
-### Table Formatting
-
-- Format tables with borders and styles
-- Create header rows with distinct formatting
-- Apply cell shading and custom borders
-- Structure tables for better readability
-
-### Advanced Document Manipulation
-
-- Delete paragraphs
-- Create custom document styles
-- Apply consistent formatting throughout documents
-- Format specific ranges of text with detailed control
-
-### Document Protection
-
-- Add password protection to documents
-- Implement restricted editing with editable sections
-- Add digital signatures to documents
-- Verify document authenticity and integrity
-
-## Installation
-
-### Installing via Smithery
-
-To install Office Word Document Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@GongRzhe/Office-Word-MCP-Server):
-
+1. **克隆项目**
 ```bash
-npx -y @smithery/cli install @GongRzhe/Office-Word-MCP-Server --client claude
+git clone <repository-url>
+cd Office-Word-MCP-Server
 ```
 
-### Prerequisites
-
-- Python 3.8 or higher
-- pip package manager
-
-### Basic Installation
-
+2. **安装Python依赖**
 ```bash
-# Clone the repository
-git clone https://github.com/GongRzhe/Office-Word-MCP-Server.git
-cd Office-Word-MCP-Server
-
-# Install dependencies
 pip install -r requirements.txt
 ```
 
-### Using the Setup Script
+3. **启动服务器**
 
-Alternatively, you can use the provided setup script which handles:
-
-- Checking prerequisites
-- Setting up a virtual environment
-- Installing dependencies
-- Generating MCP configuration
-
+**方法1：直接启动（开发环境）**
 ```bash
-python setup_mcp.py
+python3 simple_server.py
 ```
 
-## Usage with Claude for Desktop
+**方法2：使用PM2（生产环境推荐）**
+```bash
+# 安装PM2（如果未安装）
+npm install -g pm2
 
-### Configuration
+# 启动服务
+pm2 start pm2.config.js
 
-#### Method 1: After Local Installation
+# 查看状态
+pm2 status
 
-1. After installation, add the server to your Claude for Desktop configuration file:
+# 查看日志
+pm2 logs office-word-mcp-server
+```
 
+4. **验证服务**
+```bash
+curl http://127.0.0.1:8000
+# 应该返回HTTP 404（正常，说明服务器在运行）
+```
+
+## n8n集成配置
+
+在n8n中使用MCP Client Tool节点：
+
+### 配置参数
+- **Server URL**: `http://YOUR_SERVER_IP:8000`
+- **Transport**: `streamable-http` 或 `http`
+- **Port**: `8000`
+
+### 示例配置
 ```json
 {
-  "mcpServers": {
-    "word-document-server": {
-      "command": "python",
-      "args": ["/path/to/word_mcp_server.py"]
-    }
-  }
+  "serverUrl": "http://192.168.1.100:8000",
+  "transport": "streamable-http"
 }
 ```
 
-#### Method 2: Without Installation (Using uvx)
+## 项目结构
 
-1. You can also configure Claude for Desktop to use the server without local installation by using the uvx package manager:
-
-```json
-{
-  "mcpServers": {
-    "word-document-server": {
-      "command": "uvx",
-      "args": ["--from", "office-word-mcp-server", "word_mcp_server"]
-    }
-  }
-}
+```
+Office-Word-MCP-Server/
+├── simple_server.py              # 主服务器文件（推荐使用）
+├── pm2.config.js                 # PM2配置文件
+├── requirements.txt              # Python依赖
+├── pyproject.toml               # 项目配置
+├── LICENSE                      # 许可证
+├── README.md                    # 项目说明
+├── DEPLOYMENT.md                # 部署说明
+└── word_document_server/        # 核心功能模块
+    ├── main.py                  # 备用启动文件（支持多传输协议）
+    ├── __init__.py
+    ├── tools/                   # 工具实现（31个工具）
+    ├── core/                    # 核心功能
+    └── utils/                   # 工具函数
 ```
 
-2. Configuration file locations:
+## 故障排除
 
-   - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+### 常见问题
 
-3. Restart Claude for Desktop to load the configuration.
-
-### Example Operations
-
-Once configured, you can ask Claude to perform operations like:
-
-- "Create a new document called 'report.docx' with a title page"
-- "Add a heading and three paragraphs to my document"
-- "Insert a 4x4 table with sales data"
-- "Format the word 'important' in paragraph 2 to be bold and red"
-- "Search and replace all instances of 'old term' with 'new term'"
-- "Create a custom style for section headings"
-- "Apply formatting to the table in my document"
-
-## API Reference
-
-### Document Creation and Properties
-
-```python
-create_document(filename, title=None, author=None)
-get_document_info(filename)
-get_document_text(filename)
-get_document_outline(filename)
-list_available_documents(directory=".")
-copy_document(source_filename, destination_filename=None)
-convert_to_pdf(filename, output_filename=None)
-```
-
-### Content Addition
-
-```python
-add_heading(filename, text, level=1)
-add_paragraph(filename, text, style=None)
-add_table(filename, rows, cols, data=None)
-add_picture(filename, image_path, width=None)
-add_page_break(filename)
-```
-
-### Content Extraction
-
-```python
-get_document_text(filename)
-get_paragraph_text_from_document(filename, paragraph_index)
-find_text_in_document(filename, text_to_find, match_case=True, whole_word=False)
-```
-
-### Text Formatting
-
-```python
-format_text(filename, paragraph_index, start_pos, end_pos, bold=None,
-            italic=None, underline=None, color=None, font_size=None, font_name=None)
-search_and_replace(filename, find_text, replace_text)
-delete_paragraph(filename, paragraph_index)
-create_custom_style(filename, style_name, bold=None, italic=None,
-                    font_size=None, font_name=None, color=None, base_style=None)
-```
-
-### Table Formatting
-
-```python
-format_table(filename, table_index, has_header_row=None,
-             border_style=None, shading=None)
-```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Missing Styles**
-
-   - Some documents may lack required styles for heading and table operations
-   - The server will attempt to create missing styles or use direct formatting
-   - For best results, use templates with standard Word styles
-
-2. **Permission Issues**
-
-   - Ensure the server has permission to read/write to the document paths
-   - Use the `copy_document` function to create editable copies of locked documents
-   - Check file ownership and permissions if operations fail
-
-3. **Image Insertion Problems**
-   - Use absolute paths for image files
-   - Verify image format compatibility (JPEG, PNG recommended)
-   - Check image file size and permissions
-
-### Debugging
-
-Enable detailed logging by setting the environment variable:
-
+1. **服务器无法启动**
 ```bash
-export MCP_DEBUG=1  # Linux/macOS
-set MCP_DEBUG=1     # Windows
+# 检查Python版本
+python3 --version
+
+# 检查依赖安装
+pip list | grep mcp
+
+# 重新安装依赖
+pip install -r requirements.txt --force-reinstall
 ```
 
-## Contributing
+2. **PM2进程异常**
+```bash
+# 查看PM2状态
+pm2 status
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+# 查看详细日志
+pm2 logs office-word-mcp-server --lines 50
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+# 重启服务
+pm2 restart office-word-mcp-server
+```
 
-## License
+3. **端口占用**
+```bash
+# 检查端口使用
+netstat -tlnp | grep 8000
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+# 杀死占用进程
+sudo kill -9 <PID>
+```
 
-## Acknowledgments
+## 技术规格
 
-- [Model Context Protocol](https://modelcontextprotocol.io/) for the protocol specification
-- [python-docx](https://python-docx.readthedocs.io/) for Word document manipulation
-- [FastMCP](https://github.com/modelcontextprotocol/python-sdk) for the Python MCP implementation
+- **传输协议**: Streamable HTTP (推荐)
+- **端口**: 8000 (默认)
+- **Python版本**: 3.8+
+- **主要依赖**: python-docx, mcp, uvicorn
+- **进程管理**: PM2 (生产环境)
 
----
+## 许可证
 
-_Note: This server interacts with document files on your system. Always verify that requested operations are appropriate before confirming them in Claude for Desktop or other MCP clients._
+MIT License - 详见LICENSE文件
+
+## 支持
+
+如有问题或建议：
+1. 检查现有的GitHub Issues
+2. 创建新的Issue并提供详细信息
+3. 包含错误信息和重现步骤
+
+## 更新日志
+
+### Version 1.0.0 (当前版本)
+- ✅ 31个验证可用的Word文档操作工具
+- ✅ 稳定的Streamable HTTP传输
+- ✅ 完整的n8n集成支持
+- ✅ PM2生产环境部署
+- ✅ 全面的错误处理和日志记录

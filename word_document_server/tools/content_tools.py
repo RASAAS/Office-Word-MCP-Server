@@ -399,3 +399,34 @@ async def search_and_replace(filename: str, find_text: str, replace_text: str) -
             return f"No occurrences of '{find_text}' found."
     except Exception as e:
         return f"Failed to search and replace: {str(e)}"
+
+
+async def get_document_text_content(filename: str) -> str:
+    """Extract all text content from a Word document.
+    
+    Args:
+        filename: Path to the Word document
+    """
+    filename = ensure_docx_extension(filename)
+    
+    if not os.path.exists(filename):
+        return f"Document {filename} does not exist"
+    
+    try:
+        doc = Document(filename)
+        full_text = []
+        for para in doc.paragraphs:
+            full_text.append(para.text)
+        # Also consider text in tables
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for para in cell.paragraphs:
+                        full_text.append(para.text)
+        
+        content = "\n".join(full_text)
+        if not content.strip(): # Check if content is empty or only whitespace
+            return f"Document {filename} appears to be empty or contains no extractable text."
+        return content
+    except Exception as e:
+        return f"Failed to get document text content: {str(e)}"
