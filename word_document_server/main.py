@@ -78,10 +78,10 @@ def run_server():
 
     try:
         # Run the server with network transport
+        # FastMCP should pick up host and port from environment variables
+        # when using network transport modes like 'sse'.
         mcp.run(
-            transport=server_transport,
-            host=server_host,
-            port=server_port
+            transport=server_transport
         )
     except Exception as e:
         print(f"Error starting MCP server: {e}") # 打印启动错误
