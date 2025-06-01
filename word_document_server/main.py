@@ -64,9 +64,31 @@ def run_server():
     """Run the Word Document MCP Server."""
     # Register all tools
     register_tools()
-    
-    # Run the server
-    mcp.run(transport='stdio')
+
+    # 从环境变量读取配置，如果未设置则使用默认值
+    # 对于 n8n 的 SSE Endpoint，我们通常使用 'sse' 作为传输方式。
+    # 'streamable-http' 是 FastMCP 推荐的较新标准，也可以尝试，但 'sse' 更直接。
+    server_transport = os.environ.get('MCP_TRANSPORT', 'sse')
+    server_host = os.environ.get('MCP_HOST', '0.0.0.0')  # 监听所有可用网络接口
+    server_port = int(os.environ.get('MCP_PORT', 8000)) # 默认监听 8000 端口
+
+    # 添加日志输出，方便部署时确认配置
+    print(f"Attempting to start MCP server with transport: {server_transport}, host: {server_host}, port: {server_port}")
+    sys.stdout.flush() # 确保print能立即输出
+
+    try:
+        # Run the server with network transport
+        mcp.run(
+            transport=server_transport,
+            host=server_host,
+            port=server_port
+        )
+    except Exception as e:
+        print(f"Error starting MCP server: {e}") # 打印启动错误
+        sys.stdout.flush()
+        # 可以选择在这里重新抛出异常或退出
+        # raise
+
     return mcp
 
 if __name__ == "__main__":
